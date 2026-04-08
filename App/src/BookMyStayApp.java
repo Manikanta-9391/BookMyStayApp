@@ -1,22 +1,17 @@
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
-// Base class
 abstract class Bogie {
     String id;
 
     public Bogie(String id) {
         this.id = id;
     }
-
-    public String getId() {
-        return id;
-    }
 }
 
 // Passenger Bogie
 class PassengerBogie extends Bogie {
-    String type; // Sleeper, AC Chair, First Class
+    String type;
     int capacity;
 
     public PassengerBogie(String id, String type, int capacity) {
@@ -25,27 +20,23 @@ class PassengerBogie extends Bogie {
         this.capacity = capacity;
     }
 
-    public String getType() {
-        return type;
+    public int getCapacity() {
+        return capacity;
     }
 }
 
 // Goods Bogie
 class GoodsBogie extends Bogie {
-    String cargoType; // Liquid, Solid
+    String shape; // Rectangular, Cylindrical
 
-    public GoodsBogie(String id, String cargoType) {
+    public GoodsBogie(String id, String shape) {
         super(id);
-        this.cargoType = cargoType;
-    }
-
-    public String getCargoType() {
-        return cargoType;
+        this.shape = shape;
     }
 }
 
-// Main Application
-public class TrainConsistApp {
+// Main App
+public class TrainConsistAppUC10 {
 
     public static void main(String[] args) {
 
@@ -57,80 +48,19 @@ public class TrainConsistApp {
         bogies.add(new PassengerBogie("P3", "Sleeper", 72));
         bogies.add(new PassengerBogie("P4", "First Class", 40));
 
-        bogies.add(new GoodsBogie("G1", "Liquid"));
-        bogies.add(new GoodsBogie("G2", "Solid"));
-        bogies.add(new GoodsBogie("G3", "Liquid"));
-        bogies.add(new GoodsBogie("G4", "Solid"));
+        bogies.add(new GoodsBogie("G1", "Rectangular"));
+        bogies.add(new GoodsBogie("G2", "Cylindrical"));
 
         // ===============================
-        // 1. Group Passenger Bogies by Type
+        // UC10: Total Seat Calculation
         // ===============================
-        Map<String, List<PassengerBogie>> passengerGroups =
-                bogies.stream()
-                        .filter(b -> b instanceof PassengerBogie)
-                        .map(b -> (PassengerBogie) b)
-                        .collect(Collectors.groupingBy(PassengerBogie::getType));
 
-        System.out.println("Passenger Bogies Grouped by Type:");
-        passengerGroups.forEach((type, list) -> {
-            System.out.println(type + " -> " + list.size() + " bogies");
-        });
+        int totalSeats = bogies.stream()
+                .filter(b -> b instanceof PassengerBogie)
+                .map(b -> (PassengerBogie) b)
+                .map(PassengerBogie::getCapacity)
+                .reduce(0, (sum, capacity) -> sum + capacity);
 
-        System.out.println();
-
-        // ===============================
-        // 2. Group Goods Bogies by Cargo Type
-        // ===============================
-        Map<String, List<GoodsBogie>> goodsGroups =
-                bogies.stream()
-                        .filter(b -> b instanceof GoodsBogie)
-                        .map(b -> (GoodsBogie) b)
-                        .collect(Collectors.groupingBy(GoodsBogie::getCargoType));
-
-        System.out.println("Goods Bogies Grouped by Cargo Type:");
-        goodsGroups.forEach((cargo, list) -> {
-            System.out.println(cargo + " -> " + list.size() + " bogies");
-        });
-
-        System.out.println();
-
-        // ===============================
-        // 3. Group All Bogies by Category
-        // ===============================
-        Map<String, List<Bogie>> categoryGroups =
-                bogies.stream()
-                        .collect(Collectors.groupingBy(b ->
-                                (b instanceof PassengerBogie) ? "Passenger" : "Goods"
-                        ));
-
-        System.out.println("All Bogies Grouped by Category:");
-        categoryGroups.forEach((category, list) -> {
-            System.out.println(category + " -> " + list.size() + " bogies");
-        });
-
-        System.out.println();
-
-        // ===============================
-        // 4. Nested Grouping (Advanced)
-        // ===============================
-        Map<String, Map<String, List<Bogie>>> nestedGroups =
-                bogies.stream()
-                        .collect(Collectors.groupingBy(
-                                b -> (b instanceof PassengerBogie) ? "Passenger" : "Goods",
-                                Collectors.groupingBy(b -> {
-                                    if (b instanceof PassengerBogie)
-                                        return ((PassengerBogie) b).getType();
-                                    else
-                                        return ((GoodsBogie) b).getCargoType();
-                                })
-                        ));
-
-        System.out.println("Nested Grouping:");
-        nestedGroups.forEach((category, subMap) -> {
-            System.out.println(category + ":");
-            subMap.forEach((type, list) -> {
-                System.out.println("  " + type + " -> " + list.size() + " bogies");
-            });
-        });
+        System.out.println("Total Seating Capacity of Train: " + totalSeats);
     }
 }
