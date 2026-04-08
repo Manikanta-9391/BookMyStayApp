@@ -3,68 +3,66 @@ import java.util.stream.Collectors;
 
 public class TrainConsistApp {
 
-    // Base class
-    static abstract class Bogie {
-        private String id;
-
-        public Bogie(String id) {
-            this.id = id;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
-
     // Passenger Bogie class
-    static class PassengerBogie extends Bogie {
-        private String type;
-        private int capacity;
+    static class PassengerBogie {
+        private String bogieId;
+        private String bogieType;
+        private int seatingCapacity;
 
-        public PassengerBogie(String id, String type, int capacity) {
-            super(id);
-            this.type = type;
-            this.capacity = capacity;
+        public PassengerBogie(String bogieId, String bogieType, int seatingCapacity) {
+            this.bogieId = bogieId;
+            this.bogieType = bogieType;
+            this.seatingCapacity = seatingCapacity;
         }
 
-        public int getCapacity() {
-            return capacity;
+        public int getSeatingCapacity() {
+            return seatingCapacity;
         }
 
-        public String getType() {
-            return type;
+        public String getBogieType() {
+            return bogieType;
         }
 
         @Override
         public String toString() {
-            return "Bogie ID: " + getId() +
-                    ", Type: " + type +
-                    ", Capacity: " + capacity;
+            return "Bogie ID: " + bogieId +
+                    ", Type: " + bogieType +
+                    ", Capacity: " + seatingCapacity;
         }
     }
 
     public static void main(String[] args) {
 
-        // Step 1: Create list of bogies
-        List<PassengerBogie> bogies = new ArrayList<>();
+        Scanner sc = new Scanner(System.in);
 
-        bogies.add(new PassengerBogie("B1", "Sleeper", 72));
-        bogies.add(new PassengerBogie("B2", "AC Chair", 45));
-        bogies.add(new PassengerBogie("B3", "First Class", 30));
-        bogies.add(new PassengerBogie("B4", "Sleeper", 80));
-        bogies.add(new PassengerBogie("B5", "AC Chair", 50));
+        // Step 1: User creates list of bogies
+        List<PassengerBogie> bogieList = new ArrayList<>();
 
-        // Step 2: Set capacity filter
-        int minCapacity = 50;
+        bogieList.add(new PassengerBogie("P1", "Sleeper", 72));
+        bogieList.add(new PassengerBogie("P2", "AC Chair", 45));
+        bogieList.add(new PassengerBogie("P3", "First Class", 30));
+        bogieList.add(new PassengerBogie("P4", "Sleeper", 80));
+        bogieList.add(new PassengerBogie("P5", "AC Chair", 55));
 
-        // Step 3: Apply Stream filtering
-        List<PassengerBogie> filteredBogies = bogies.stream()
-                .filter(b -> b.getCapacity() > minCapacity)
+        // Step 2: Take input for filtering condition
+        System.out.print("Enter minimum seating capacity to filter: ");
+        int minCapacity = sc.nextInt();
+
+        // Step 3: Convert list into stream and apply filter
+        List<PassengerBogie> filteredBogies = bogieList.stream()
+                .filter(b -> b.getSeatingCapacity() > minCapacity)
                 .collect(Collectors.toList());
 
-        // Step 4: Display results
-        System.out.println("Passenger Bogies with capacity > " + minCapacity + ":\n");
+        // Step 4: Display filtered bogies
+        System.out.println("\nFiltered Passenger Bogies:\n");
 
-        filteredBogies.forEach(System.out::println);
+        if (filteredBogies.isEmpty()) {
+            System.out.println("No bogies match the criteria.");
+        } else {
+            filteredBogies.forEach(System.out::println);
+        }
+
+        // Program continues...
+        sc.close();
     }
 }
